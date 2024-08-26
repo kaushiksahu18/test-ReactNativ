@@ -1,37 +1,34 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React, { useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import { Pressable, View, Text } from "react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
+export const getColor = (theme: string | undefined) => {
+  let lightness;
+  if (theme === "dark") {
+    lightness = Math.random() * 20 + 5;
+  } else {
+    lightness = Math.random() * 20 + 75;
   }
+  return `hsl(${Math.random() * 360}, 100%, ${lightness}%)`;
+};
 
+const RootLayout = () => {
+  const [bgColor, setBgColor] = useState(getColor("light"));
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <View
+      className={`flex-1 items-center justify-center gap-2`}
+      style={{backgroundColor: bgColor}}
+    >
+      <Text className="text-2xl text-black">Home</Text>
+      <Pressable
+        onPress={() => setBgColor(getColor("light"))}
+        className="py-2 px-4 bg-black rounded-lg active:bg-black"
+      >
+        <Text className="text-white text-2xl">Button</Text>
+      </Pressable>
+      <StatusBar style="auto" />
+    </View>
   );
-}
+};
+
+export default RootLayout;
